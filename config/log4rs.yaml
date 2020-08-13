@@ -1,0 +1,29 @@
+refresh_rate: 30 seconds
+appenders:
+######################################################################
+  roll:
+    kind: rolling_file
+    path: log/roll.log # The path of the current(recent) log file
+    encoder: # Format output
+      pattern: "{d(%Y-%m-%d %H:%M:%S %Z)(utc)} [{l}] - {m}{n}"
+    policy: # Handles rotation of the log file
+      kind: compound
+      trigger: # determines when the log will roll over
+        kind: size
+        limit: 10 kb
+      roller: # How to process the old log file
+        kind: fixed_window
+        pattern: log/roll.{}.log # The filename pattern for archived logs
+        count: 5 # The maximum number of archived logs to maintain
+        base: 1 # The base value for archived log indices
+######################################################################
+  stdout:
+    kind: console
+root: # Set the default logging level and attach to appenders
+  level: info
+  appenders:
+    - roll
+    - stdout
+loggers:
+  app::backend::db:
+    level: info
